@@ -1,85 +1,84 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS JWT Auth Template
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Authentication System Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The authentication system implements secure token-based authentication using 
+JWT (JSON Web Tokens) with token rotation and chain tracking for enhanced security.
 
-## Description
+## Token Strategy
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Access Token
+- Short-lived token (30 minutes)
+- Used for API authentication
+- Contains minimal payload (user ID, app ID, token ID)
+- Stateless validation
 
-## Project setup
+### Refresh Token
+- Longer-lived token (2 weeks)
+- Single-use only (implements token rotation)
+- Used to obtain new token pairs
+- Enhances security through rotation pattern
 
-```bash
-$ pnpm install
-```
+### Token Chain
+- Internal tracking mechanism
+- Links all tokens from a single session
+- Enables efficient token revocation
+- Supports multi-device session management
 
-## Compile and run the project
+## Authentication Flows
 
-```bash
-# development
-$ pnpm run start
+### Sign-in Process
+1. User provides credentials
+2. System validates credentials
+3. System generates:
+   - New chain ID (tracks session)
+   - Access token (30min validity)
+   - Refresh token (2 weeks validity)
+4. Tokens are returned to client
 
-# watch mode
-$ pnpm run start:dev
+### Token Refresh Process
+1. Client uses refresh token to request new tokens
+2. Previous refresh token is invalidated
+3. New token pair is generated
+4. Tokens remain in same chain for session tracking
 
-# production mode
-$ pnpm run start:prod
-```
+### Sign-up Process
+Follows the same token generation process as sign-in
 
-## Run tests
+### Sign-out Process
+1. Client initiates logout
+2. System revokes the entire token chain
+3. All tokens in the chain become invalid
+4. Affects only the current device/session
 
-```bash
-# unit tests
-$ pnpm run test
+### Password Change/Reset
+1. System revokes all token chains for the user
+2. User is logged out from all devices
+3. Optional: UI prompt to choose between:
+   - Global logout (all devices)
+   - Current device only logout
 
-# e2e tests
-$ pnpm run test:e2e
+## Security Features
+- Token rotation for refresh tokens
+- Chain-based token tracking
+- Efficient token revocation
+- Device-specific session management
+- Protection against token reuse
+- Audit trail capabilities
 
-# test coverage
-$ pnpm run test:cov
-```
 
-## Resources
+## Scratch pad
 
-Check out a few resources that may come in handy when working with NestJS:
+user sign-in/sign-up
+  -> create token pair
+  -> start session chainid
+  -> start token chainid
+user refresh token
+  -> create token pair
+  -> revoke prev token chanid (*rotation*)
+  -> start new token chainid
+user sign-out
+  -> revoke session chainid
+user reset password
+  -> revoke all session chainids
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
