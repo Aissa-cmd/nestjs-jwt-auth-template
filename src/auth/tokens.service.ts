@@ -8,7 +8,10 @@ import { AppConfig } from 'src/common/types/app-config';
 import { AuthTokenTypes, ChainTokenTypes } from 'src/common/enums/auth';
 import { AuthHelpers } from 'src/common/utils/auth.helpers';
 import { AppUser } from 'src/users/entities/user.entity';
-import { AuthTokenPayload, RefreshAuthTokenPayload } from 'src/common/types/auth';
+import {
+  AuthTokenPayload,
+  RefreshAuthTokenPayload,
+} from 'src/common/types/auth';
 
 @Injectable()
 export class AuthTokensService {
@@ -17,7 +20,7 @@ export class AuthTokensService {
     private readonly authTokensRepository: Repository<AppAuthTokens>,
     private readonly configService: ConfigService<AppConfig, true>,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   #getTokenSecret(type: AuthTokenTypes) {
     if (type === AuthTokenTypes.REFRESH) {
@@ -128,12 +131,15 @@ export class AuthTokensService {
 
   async revokeSessionChain(sessionChainId: string) {
     try {
-      await this.authTokensRepository.update({
-        id: sessionChainId,
-        type: ChainTokenTypes.SESSION,
-      }, {
-        isRevoked: true,
-      });
+      await this.authTokensRepository.update(
+        {
+          id: sessionChainId,
+          type: ChainTokenTypes.SESSION,
+        },
+        {
+          isRevoked: true,
+        },
+      );
     } catch (error) {
       console.error(error);
       throw error;
@@ -142,12 +148,15 @@ export class AuthTokensService {
 
   async revokeSubChain(subChainId: string) {
     try {
-      await this.authTokensRepository.update({
-        id: subChainId,
-        type: ChainTokenTypes.SUB_CHAIN,
-      }, {
-        isRevoked: true,
-      });
+      await this.authTokensRepository.update(
+        {
+          id: subChainId,
+          type: ChainTokenTypes.SUB_CHAIN,
+        },
+        {
+          isRevoked: true,
+        },
+      );
     } catch (error) {
       console.error(error);
       throw error;
@@ -203,7 +212,7 @@ export class AuthTokensService {
       );
       this.revokeSubChain(refreshTokenPayload.chi).catch((error) => {
         console.log(error);
-      })
+      });
       return {
         access: accessToken,
         refresh: refreshToken,

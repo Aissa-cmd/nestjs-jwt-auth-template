@@ -7,7 +7,10 @@ import { Repository } from 'typeorm';
 import { AuthTokensService } from './tokens.service';
 import { AuthHelpers } from 'src/common/utils/auth.helpers';
 import { AuthTokenTypes } from 'src/common/enums/auth';
-import { AccessAuthTokenPayload, RefreshAuthTokenPayload } from 'src/common/types/auth';
+import {
+  AccessAuthTokenPayload,
+  RefreshAuthTokenPayload,
+} from 'src/common/types/auth';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +18,7 @@ export class AuthService {
     @InjectRepository(AppUser)
     private readonly usersRepository: Repository<AppUser>,
     private readonly authTokensService: AuthTokensService,
-  ) { }
+  ) {}
 
   async signup(signUpDto: SignUpDto) {
     try {

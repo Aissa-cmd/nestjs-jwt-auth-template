@@ -4,12 +4,15 @@ import { SignUpDto } from './dtos/signup.dto';
 import { SignInDto } from './dtos/signin.dto';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { AuthToken } from './decorators/auth-token.decorator';
-import { AccessAuthTokenPayload, RefreshAuthTokenPayload } from 'src/common/types/auth';
+import {
+  AccessAuthTokenPayload,
+  RefreshAuthTokenPayload,
+} from 'src/common/types/auth';
 import { AccessTokenGuard } from './guards/access-token.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
   async singup(@Body() singUpDto: SignUpDto) {
@@ -23,17 +26,13 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Post('signout')
-  async signout(
-    @AuthToken() token: AccessAuthTokenPayload
-  ) {
+  async signout(@AuthToken() token: AccessAuthTokenPayload) {
     return this.authService.signout(token);
   }
 
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
-  async refreshToken(
-    @AuthToken() refreshToken: RefreshAuthTokenPayload
-  ) {
+  async refreshToken(@AuthToken() refreshToken: RefreshAuthTokenPayload) {
     return this.authService.refreshToken(refreshToken);
   }
 
