@@ -17,6 +17,7 @@ export class UsersService {
   async findAuthUserById(userId: string) {
     try {
       const user = await this.usersRepository.findOne({
+        relations: ['permissions', 'groups', 'groups.permissions'],
         where: {
           id: userId,
         },
